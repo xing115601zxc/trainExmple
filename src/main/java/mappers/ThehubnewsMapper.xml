@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="mappers.ThehubnewsMapper">
+    <resultMap type="ThehubnewsPage" id="ThehubnewsPage">
+        <id column="id" property="id"></id>
+        <result column="num" property="num"/>
+        <result column="title" property="title"/>
+        <result column="date" property="date"/>
+        <result column="url" property="url"/>
+        <result column="text" property="text"/>
+    </resultMap>
+
+
+    <insert id="addThehubnewsContent">
+        insert into pagecontent(id,num, title, url, text, `date`)
+        values (${id},${num}, '${title}', '${url}', '${text}', '${date}');
+    </insert>
+    <insert id="addThehubnewsList" parameterType="ThehubnewsPage">
+        insert into pagelink(num, title, url, `date`)
+        values (${num}, '${title}', '${url}', '${date}');
+    </insert>
+    <select id="getPagelink" resultMap="ThehubnewsPage" parameterType="int" resultType="collection">
+        select * from pagelink order by `id` asc LIMIT #{limit};
+    </select>
+</mapper>
