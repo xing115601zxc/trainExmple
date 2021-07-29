@@ -3,23 +3,27 @@
 <mapper namespace="mappers.ThehubnewsMapper">
     <resultMap type="ThehubnewsPage" id="ThehubnewsPage">
         <id column="id" property="id"></id>
-        <result column="num" property="num"/>
         <result column="title" property="title"/>
         <result column="date" property="date"/>
         <result column="url" property="url"/>
         <result column="text" property="text"/>
     </resultMap>
 
-
     <insert id="addThehubnewsContent">
-        insert into pagecontent(id,num, title, url, text, `date`)
-        values (${id},${num}, '${title}', '${url}', '${text}', '${date}');
+        insert into pagecontent(id, title, url, text, `date`)
+        values (${id}, '${title}', '${url}', '${text}', '${date}');
     </insert>
     <insert id="addThehubnewsList" parameterType="ThehubnewsPage">
-        insert into pagelink(num, title, url, `date`)
-        values (${num}, '${title}', '${url}', '${date}');
+        insert into pagelink(id, title, url, `date`)
+        values (${id}, '${title}', '${url}', '${date}');
     </insert>
-    <select id="getPagelink" resultMap="ThehubnewsPage" parameterType="int" resultType="collection">
-        select * from pagelink order by `id` asc LIMIT #{limit};
+    <select id="getPagelink" resultMap="ThehubnewsPage" parameterType="String" resultType="collection">
+        select * from pagelink where `date`>=#{datetime} order by `date` DESC;
+    </select>
+    <select id="existPagelink" parameterType="int" resultType="Boolean">
+        select if(COUNT(1)=1,TRUE,FALSE) from pagelink where id = #{id} LIMIT 1
+    </select>
+    <select id="existPagecontent" parameterType="int" resultType="Boolean">
+        select if(COUNT(1)=1,TRUE,FALSE) from pagecontent where id = #{id} LIMIT 1
     </select>
 </mapper>

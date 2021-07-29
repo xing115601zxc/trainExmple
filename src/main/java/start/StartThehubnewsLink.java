@@ -18,9 +18,9 @@ import java.util.Scanner;
 public class StartThehubnewsLink {
     private ArrayList<ThehubnewsPage> list = new ArrayList<>();
     private ThehubnewsUtil util = new ThehubnewsUtil();
-    private static Logger logger = Logger.getLogger(StartThehubnewsLink.class);
-    private SqlSession sqlSession = SqlSessionUtil.getSqlSession();
-    private ThehubnewsMapper thehubnewsMapper = sqlSession.getMapper(ThehubnewsMapper.class);
+    private final static Logger logger = Logger.getLogger(StartThehubnewsLink.class);
+    private final SqlSession sqlSession = SqlSessionUtil.getSqlSession();
+    private final ThehubnewsMapper thehubnewsMapper = sqlSession.getMapper(ThehubnewsMapper.class);
 
     /**
      *
@@ -43,7 +43,14 @@ public class StartThehubnewsLink {
         thehubnewsMapper.addThehubnewsList(page);
     }
 
-
+    /**
+     *
+     * @param page 以id判斷該物件是否存在
+     * @return 存在返回 true
+     */
+    Boolean existThehubnewsLink(ThehubnewsPage page) {
+       return thehubnewsMapper.existPagelink(page.getId());
+    }
 
     public static void main(String[] args) throws Exception {
         System.out.println("請輸入讀取至幾頁");
@@ -78,12 +85,16 @@ public class StartThehubnewsLink {
                 for (ThehubnewsPage page : linkList) {
 //                    取得該新聞日期long
                     date = simpleDateFormat.parse(page.getDate()).getTime();
-//                    若日期小於2天前,不放入資料庫,跳出該次
+//                    若日期小於2天前,不放入資料庫,跳出迴圈
                     if (date < twoDaysAgo) {
-                        return;
+                        break;
                     }
-//                    若日期為3天內,3天內連結數++
+//                  日期為3天內,3天內連結數++
                     twoDaysAgoCount++;
+//                    若該id存在於資料庫,跳出該次
+                    if(start.existThehubnewsLink(page)){
+                        continue;
+                    }
                        try {
 //                           存入資料庫,使用catch避免重複資料中斷程式
                            start.insertThehubnewsLink(page);
@@ -91,6 +102,9 @@ public class StartThehubnewsLink {
                        }catch (Exception e){
                            logger.error(e);
                        }
+                }
+                if (date < twoDaysAgo) {
+                    break;
                 }
             }
         } else {
@@ -110,13 +124,17 @@ public class StartThehubnewsLink {
             for (int i = 0; i < lodaPage; i++) {
                 StartThehubnewsLink start = new StartThehubnewsLink();
                 ArrayList<ThehubnewsPage> linkList = start.getThehubnewsLinks(i + 1);
-                long date = 0;
+
                 for (ThehubnewsPage page : linkList) {
 //                    取得該新聞日期long
-                    date = simpleDateFormat.parse(page.getDate()).getTime();
+                    long  date = simpleDateFormat.parse(page.getDate()).getTime();
 //                    若新聞日期為3天內,3天內連結數++
                     if (date > twoDaysAgo) {
                         twoDaysAgoCount++;
+                    }
+//                    若該id存在於資料庫,跳出該次
+                    if(start.existThehubnewsLink(page)){
+                        continue;
                     }
                     try {
 //                        將所有取得資料放入資料庫,使用catch避免重複資料中斷程式

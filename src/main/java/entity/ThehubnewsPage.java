@@ -2,8 +2,9 @@ package entity;
 
 public class ThehubnewsPage {
     private int id;
-    private int num;
     private String title, date, url, text;
+
+//    getter and setter
 
     public int getId() {
         return id;
@@ -11,13 +12,6 @@ public class ThehubnewsPage {
 
     public void setId(int id) {
         this.id = id;
-    }
-    public int getNum() {
-        return num;
-    }
-
-    public void setNum(int num) {
-        this.num = num;
     }
 
     public String getTitle() {
